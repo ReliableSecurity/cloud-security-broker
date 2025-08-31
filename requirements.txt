@@ -1,0 +1,92 @@
+# CASB Security System - Python Dependencies
+
+# Core framework dependencies
+flask==3.0.0
+flask-restful==0.3.10
+flask-cors==4.0.0
+
+# Database
+sqlite3  # Built-in with Python
+
+# Cryptography and security
+cryptography==41.0.8
+pyotp==2.9.0
+qrcode[pil]==7.4.2
+pyjwt==2.8.0
+
+# Data processing and analysis
+pandas==2.1.4
+numpy==1.24.4
+
+# HTTP requests and async
+requests==2.31.0
+aiohttp==3.9.1
+asyncio  # Built-in with Python
+
+# File processing
+python-magic==0.4.27
+Pillow==10.1.0
+
+# Email support
+smtplib  # Built-in with Python
+
+# Development and testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+
+# Logging and monitoring
+structlog==23.2.0
+
+# Optional cloud provider SDKs (uncomment as needed)
+# boto3==1.34.0              # AWS SDK
+# azure-identity==1.15.0     # Azure SDK
+# azure-mgmt-core==1.4.0     # Azure Management SDK
+# yandexcloud==0.229.0       # Yandex Cloud SDK (unofficial)
+
+# Development tools
+black==23.12.0
+flake8==6.1.0
+mypy==1.7.1
+
+# Documentation
+sphinx==7.2.6
+sphinx-rtd-theme==1.3.0
+
+# Performance monitoring
+psutil==5.9.6
+
+# Environment management
+python-dotenv==1.0.0
+
+# Date and time utilities
+python-dateutil==2.8.2
+
+# JSON schema validation
+jsonschema==4.20.0
+
+# Configuration management
+pyyaml==6.0.1
+
+# Web server (production)
+gunicorn==21.2.0
+gevent==23.9.1
+
+# Database migrations (optional)
+alembic==1.13.1
+
+# Caching (optional)
+redis==5.0.1
+
+# Message queuing (optional)
+celery==5.3.4
+
+# Metrics and monitoring (optional)
+prometheus-client==0.19.0
+
+# Security scanning
+bandit==1.7.5
+safety==2.3.5
+
+# Code quality
+pre-commit==3.6.0
