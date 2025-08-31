@@ -1,0 +1,419 @@
+{% extends "base.html" %}
+
+{% block page_title %}Панель управления{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <!-- Карточки метрик -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card metric-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title mb-1">Всего запросов</h6>
+                        <h3 class="mb-0" id="total-requests">{{ casb_metrics.metrics.total_requests }}</h3>
+                        <small>За 24 часа: {{ casb_metrics.last_24h.requests }}</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-exchange-alt fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card metric-card warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title mb-1">Заблокировано</h6>
+                        <h3 class="mb-0" id="blocked-requests">{{ casb_metrics.metrics.blocked_requests }}</h3>
+                        <small>За 24 часа: {{ casb_metrics.last_24h.blocked }}</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-ban fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card metric-card danger">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title mb-1">Угрозы</h6>
+                        <h3 class="mb-0" id="threat-detections">{{ casb_metrics.metrics.threat_detections }}</h3>
+                        <small>За 24 часа: {{ casb_metrics.last_24h.threats }}</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-exclamation-triangle fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card metric-card success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title mb-1">Активные пользователи</h6>
+                        <h3 class="mb-0" id="active-users">{{ casb_metrics.summary.active_users }}</h3>
+                        <small>Сервисов: {{ casb_metrics.summary.active_services }}</small>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-users fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- График активности -->
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-area text-primary"></i>
+                    Активность за 24 часа
+                </h5>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-primary btn-sm active" data-period="24">24ч</button>
+                    <button type="button" class="btn btn-outline-primary btn-sm" data-period="168">7д</button>
+                    <button type="button" class="btn btn-outline-primary btn-sm" data-period="720">30д</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="activityChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Статус системы -->
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-heartbeat text-success"></i>
+                    Статус системы
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span>CASB Core</span>
+                    <span class="status-badge status-active">Активен</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span>Мониторинг</span>
+                    <span class="status-badge status-active">Активен</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span>DLP Engine</span>
+                    <span class="status-badge status-active">Активен</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span>Policy Engine</span>
+                    <span class="status-badge status-active">Активен</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>База данных</span>
+                    <span class="status-badge status-active">Активна</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-shield-alt text-info"></i>
+                    DLP Статистика
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Всего сканирований</span>
+                    <strong>{{ dlp_metrics.summary.total_scans }}</strong>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>Нарушения</span>
+                    <strong class="text-danger">{{ dlp_metrics.summary.violations_found }}</strong>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span>В карантине</span>
+                    <strong class="text-warning">{{ dlp_metrics.summary.quarantined_files }}</strong>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>Процент нарушений</span>
+                    <strong>{{ dlp_metrics.summary.violation_rate }}%</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- События безопасности -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle text-warning"></i>
+                    Последние угрозы
+                </h5>
+                <a href="{{ url_for('monitoring') }}" class="btn btn-outline-primary btn-sm">
+                    Подробнее <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="card-body threat-timeline">
+                {% if monitoring_metrics.top_users %}
+                    {% for event in monitoring_metrics.top_users[:5] %}
+                    <div class="timeline-item">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <strong>Высокая активность</strong><br>
+                                <small class="text-muted">Пользователь: {{ event.user_id }}</small><br>
+                                <small class="text-muted">Событий: {{ event.activity }}</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="status-badge status-warning">Внимание</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center text-muted">
+                        <i class="fas fa-check-circle fa-2x mb-2"></i><br>
+                        Угроз не обнаружено
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Политики безопасности -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-gavel text-info"></i>
+                    Политики безопасности
+                </h5>
+                <a href="{{ url_for('policies') }}" class="btn btn-outline-primary btn-sm">
+                    Управление <i class="fas fa-cog"></i>
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <h4 class="text-primary">{{ policy_metrics.summary.active_policies }}</h4>
+                        <small class="text-muted">Активных</small>
+                    </div>
+                    <div class="col-4">
+                        <h4 class="text-success">{{ policy_metrics.summary.matched_evaluations }}</h4>
+                        <small class="text-muted">Срабатываний</small>
+                    </div>
+                    <div class="col-4">
+                        <h4 class="text-info">{{ policy_metrics.summary.match_rate }}%</h4>
+                        <small class="text-muted">Эффективность</small>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <h6>Топ политик по срабатываниям:</h6>
+                    {% for policy in policy_metrics.policy_performance[:3] %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small">{{ policy.policy_name[:30] }}{% if policy.policy_name|length > 30 %}...{% endif %}</span>
+                        <span class="badge bg-primary">{{ policy.matches }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Быстрые действия -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt text-warning"></i>
+                    Быстрые действия
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <button class="btn btn-outline-primary w-100" onclick="showAddUserModal()">
+                            <i class="fas fa-user-plus"></i><br>
+                            Добавить пользователя
+                        </button>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <button class="btn btn-outline-success w-100" onclick="showAddServiceModal()">
+                            <i class="fas fa-cloud-upload-alt"></i><br>
+                            Добавить сервис
+                        </button>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <button class="btn btn-outline-warning w-100" onclick="runDLPScan()">
+                            <i class="fas fa-search"></i><br>
+                            Запустить DLP сканирование
+                        </button>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <button class="btn btn-outline-info w-100" onclick="generateReport()">
+                            <i class="fas fa-file-download"></i><br>
+                            Сгенерировать отчет
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Инициализация графика активности
+    const ctx = document.getElementById('activityChart').getContext('2d');
+    
+    // Генерируем данные для демонстрации (в реальности будут приходить с сервера)
+    const generateChartData = () => {
+        const labels = [];
+        const data = [];
+        const now = new Date();
+        
+        for (let i = 23; i >= 0; i--) {
+            const hour = new Date(now.getTime() - i * 60 * 60 * 1000);
+            labels.push(hour.getHours() + ':00');
+            data.push(Math.floor(Math.random() * 100) + 10);
+        }
+        
+        return { labels, data };
+    };
+
+    const chartData = generateChartData();
+    
+    const activityChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartData.labels,
+            datasets: [{
+                label: 'Запросы доступа',
+                data: chartData.data,
+                borderColor: 'rgb(52, 152, 219)',
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                }
+            }
+        }
+    });
+
+    // Обновление метрик в реальном времени
+    async function updateMetrics() {
+        try {
+            const response = await apiRequest('/api/stats/summary');
+            if (response.success) {
+                const metrics = response.summary.casb.metrics;
+                document.getElementById('total-requests').textContent = formatNumber(metrics.total_requests);
+                document.getElementById('blocked-requests').textContent = formatNumber(metrics.blocked_requests);
+                document.getElementById('threat-detections').textContent = formatNumber(metrics.threat_detections);
+                document.getElementById('active-users').textContent = formatNumber(response.summary.casb.summary.active_users);
+            }
+        } catch (error) {
+            console.error('Ошибка обновления метрик:', error);
+        }
+    }
+
+    // Обновляем метрики каждые 30 секунд
+    setInterval(updateMetrics, 30000);
+
+    // Функции быстрых действий
+    function showAddUserModal() {
+        // Здесь можно открыть модальное окно для добавления пользователя
+        showNotification('Функция добавления пользователя будет доступна в полной версии', 'info');
+    }
+
+    function showAddServiceModal() {
+        showNotification('Функция добавления сервиса будет доступна в полной версии', 'info');
+    }
+
+    async function runDLPScan() {
+        showNotification('Запуск DLP сканирования...', 'info');
+        
+        // Демо сканирование
+        const demoContent = `
+            Тестовый документ содержащий:
+            Паспорт: 45 03 123456
+            Email: test@company.ru
+            Телефон: +7 (495) 123-45-67
+        `;
+        
+        try {
+            const response = await apiRequest('/api/dlp/scan', 'POST', {
+                content: demoContent,
+                file_name: 'demo_scan.txt'
+            });
+            
+            if (response.success) {
+                showNotification(`DLP сканирование завершено. Найдено нарушений: ${response.patterns_found}`, 
+                               response.patterns_found > 0 ? 'warning' : 'success');
+            } else {
+                showNotification('Ошибка DLP сканирования: ' + response.error, 'danger');
+            }
+        } catch (error) {
+            showNotification('Ошибка при запуске сканирования', 'danger');
+        }
+    }
+
+    function generateReport() {
+        showNotification('Генерация отчета начата. Отчет будет доступен в разделе "Отчеты"', 'success');
+    }
+
+    // Переключение периодов на графике
+    document.querySelectorAll('[data-period]').forEach(button => {
+        button.addEventListener('click', function() {
+            // Убираем активный класс с других кнопок
+            document.querySelectorAll('[data-period]').forEach(btn => btn.classList.remove('active'));
+            // Добавляем активный класс к текущей кнопке
+            this.classList.add('active');
+            
+            // Здесь можно обновить данные графика для выбранного периода
+            const period = this.dataset.period;
+            showNotification(`Переключение на период: ${period} часов`, 'info');
+        });
+    });
+</script>
+{% endblock %}

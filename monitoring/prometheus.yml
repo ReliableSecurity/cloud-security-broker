@@ -1,0 +1,92 @@
+# Конфигурация Prometheus для CASB Security System
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'casb-monitor'
+    environment: 'production'
+
+# Правила алертинга
+rule_files:
+  - "alert_rules.yml"
+
+# Конфигурация Alertmanager
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Конфигурация сбора метрик
+scrape_configs:
+  # Метрики самого Prometheus
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # Метрики CASB приложения
+  - job_name: 'casb-app'
+    static_configs:
+      - targets: ['casb-app:5000']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    honor_labels: true
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
+
+  # Метрики системы (node_exporter)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['casb-app:9100']
+    scrape_interval: 30s
+
+  # Метрики Nginx
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['casb-app:8080']
+    metrics_path: /nginx_status
+    scrape_interval: 30s
+
+  # Метрики PostgreSQL
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:9187']
+    scrape_interval: 30s
+
+  # Метрики Redis
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:9121']
+    scrape_interval: 30s
+
+  # Кастомные метрики CASB безопасности
+  - job_name: 'casb-security-metrics'
+    static_configs:
+      - targets: ['casb-app:9090']
+    scrape_interval: 10s
+    metrics_path: /security/metrics
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
+
+# Конфигурация удаленного хранения (опционально)
+remote_write:
+  - url: "http://victoriametrics:8428/api/v1/write"
+    queue_config:
+      max_samples_per_send: 1000
+      batch_send_deadline: 5s
+      min_shards: 1
+      max_shards: 200
+
+# Конфигурация для длительного хранения
+storage:
+  tsdb:
+    path: /prometheus
+    retention.time: 90d
+    retention.size: 10GB
+    wal-compression: true

@@ -1,0 +1,361 @@
+{
+  "version": "2.0.0",
+  "environment": "development",
+  
+  "database": {
+    "path": "./casb.db",
+    "backup_enabled": true,
+    "backup_interval": 3600,
+    "backup_retention_days": 30,
+    "encryption_enabled": true,
+    "connection_pool_size": 10,
+    "timeout": 30
+  },
+  
+  "dlp": {
+    "ml_enabled": true,
+    "real_time_scanning": true,
+    "webhook_endpoint": "https://your-webhook.com/dlp",
+    "max_file_size_mb": 100,
+    "supported_file_types": [
+      ".txt", ".pdf", ".doc", ".docx", ".xls", ".xlsx", 
+      ".csv", ".json", ".xml", ".html", ".md"
+    ],
+    "retention_policy": {
+      "default_days": 2555,
+      "sensitive_data_days": 7300,
+      "audit_logs_days": 2555,
+      "archive_old_data": true
+    },
+    "encryption": {
+      "algorithm": "AES-256-GCM",
+      "key_rotation_days": 90,
+      "quantum_resistant": true
+    },
+    "anonymization": {
+      "default_method": "k_anonymity",
+      "k_value": 5,
+      "differential_privacy": {
+        "epsilon": 1.0,
+        "delta": 1e-5,
+        "sensitivity": 1.0
+      },
+      "tokenization": {
+        "vault_encryption": "AES-256-GCM",
+        "token_format": "uuid",
+        "preserve_format": false
+      }
+    },
+    "ml_models": {
+      "classification_threshold": 0.85,
+      "model_update_frequency": "weekly",
+      "training_data_path": "./training_data",
+      "model_performance_threshold": 0.90
+    },
+    "scanning": {
+      "parallel_workers": 4,
+      "batch_size": 100,
+      "timeout_seconds": 300,
+      "retry_attempts": 3
+    }
+  },
+  
+  "mfa": {
+    "totp": {
+      "issuer": "CASB Security System",
+      "window": 1,
+      "algorithm": "SHA256",
+      "key_length": 32,
+      "qr_code_size": 10
+    },
+    "sms": {
+      "provider": "twilio",
+      "api_key": "${SMS_API_KEY}",
+      "api_secret": "${SMS_API_SECRET}",
+      "from_number": "+1-555-000-0000",
+      "template": "Your CASB verification code: {code}. Valid for 5 minutes.",
+      "retry_attempts": 3
+    },
+    "email": {
+      "smtp_server": "smtp.gmail.com",
+      "smtp_port": 587,
+      "use_tls": true,
+      "username": "${SMTP_USERNAME}",
+      "password": "${SMTP_PASSWORD}",
+      "from_email": "noreply@casb-security.com",
+      "template_path": "./templates/mfa_email.html",
+      "timeout": 30
+    },
+    "adaptive": {
+      "enabled": true,
+      "risk_threshold": 0.7,
+      "max_factors": 3,
+      "context_factors": {
+        "new_device": 0.3,
+        "unusual_location": 0.4,
+        "unusual_time": 0.2,
+        "high_privilege_access": 0.5,
+        "failed_attempts": 0.6
+      }
+    },
+    "biometric": {
+      "enabled": true,
+      "supported_types": ["fingerprint", "voice", "face"],
+      "accuracy_threshold": 0.9,
+      "template_encryption": true
+    },
+    "quantum_resistant": {
+      "enabled": true,
+      "algorithm": "CRYSTALS-Kyber",
+      "key_size": 1024
+    },
+    "backup_codes": {
+      "count": 10,
+      "length": 8,
+      "format": "alphanumeric",
+      "expiry_days": 365
+    },
+    "session_management": {
+      "default_duration": 3600,
+      "max_duration": 14400,
+      "idle_timeout": 1800,
+      "concurrent_sessions": 3
+    }
+  },
+  
+  "security": {
+    "encryption": {
+      "data_at_rest": "AES-256-GCM",
+      "data_in_transit": "TLS-1.3",
+      "key_derivation": "PBKDF2-SHA256",
+      "key_rotation_days": 90
+    },
+    "password_policy": {
+      "min_length": 12,
+      "max_length": 128,
+      "require_uppercase": true,
+      "require_lowercase": true,
+      "require_numbers": true,
+      "require_special": true,
+      "history_check": 12,
+      "max_age_days": 90,
+      "lockout_threshold": 5,
+      "lockout_duration": 900
+    },
+    "session_policy": {
+      "timeout": 3600,
+      "max_concurrent": 3,
+      "require_mfa_renewal": true,
+      "track_device_fingerprint": true
+    },
+    "access_control": {
+      "principle": "least_privilege",
+      "regular_review_days": 90,
+      "auto_deprovisioning": true,
+      "privileged_access_monitoring": true
+    },
+    "audit": {
+      "log_all_access": true,
+      "log_failed_attempts": true,
+      "log_policy_changes": true,
+      "log_mfa_events": true,
+      "retention_days": 2555
+    }
+  },
+  
+  "api": {
+    "host": "0.0.0.0",
+    "port": 8000,
+    "debug": false,
+    "cors_enabled": true,
+    "cors_origins": ["http://localhost:3000", "https://your-frontend.com"],
+    "rate_limiting": {
+      "enabled": true,
+      "requests_per_minute": 100,
+      "burst_limit": 200
+    },
+    "authentication": {
+      "jwt_secret": "${JWT_SECRET}",
+      "jwt_expiry": 3600,
+      "api_key_required": true
+    },
+    "versioning": {
+      "default_version": "v1",
+      "supported_versions": ["v1", "v2"]
+    }
+  },
+  
+  "web": {
+    "host": "0.0.0.0",
+    "port": 8080,
+    "debug": false,
+    "secret_key": "${WEB_SECRET_KEY}",
+    "session_timeout": 3600,
+    "enable_csrf": true,
+    "static_files_path": "./static",
+    "template_path": "./templates"
+  },
+  
+  "monitoring": {
+    "enabled": true,
+    "real_time_alerts": true,
+    "metrics_retention_days": 365,
+    "performance_monitoring": true,
+    "health_check_interval": 60,
+    "log_level": "INFO",
+    "log_format": "json",
+    "log_file": "./logs/casb.log",
+    "max_log_size_mb": 100,
+    "log_backup_count": 5,
+    "prometheus": {
+      "enabled": false,
+      "port": 9090,
+      "path": "/metrics"
+    }
+  },
+  
+  "compliance": {
+    "frameworks": ["GDPR", "HIPAA", "SOX", "PCI_DSS", "CCPA"],
+    "auto_reporting": true,
+    "report_frequency": "monthly",
+    "report_recipients": ["compliance@company.com"],
+    "data_retention": {
+      "gdpr_max_days": 2555,
+      "hipaa_min_days": 2190,
+      "sox_min_days": 2555
+    }
+  },
+  
+  "integrations": {
+    "siem": {
+      "enabled": false,
+      "type": "splunk",
+      "endpoint": "https://splunk.company.com:8088",
+      "token": "${SIEM_TOKEN}"
+    },
+    "identity_provider": {
+      "enabled": false,
+      "type": "active_directory",
+      "ldap_server": "ad.company.com",
+      "bind_dn": "CN=service,DC=company,DC=com",
+      "search_base": "DC=company,DC=com"
+    },
+    "cloud_providers": {
+      "aws": {
+        "enabled": false,
+        "access_key": "${AWS_ACCESS_KEY}",
+        "secret_key": "${AWS_SECRET_KEY}",
+        "region": "us-east-1"
+      },
+      "azure": {
+        "enabled": false,
+        "tenant_id": "${AZURE_TENANT_ID}",
+        "client_id": "${AZURE_CLIENT_ID}",
+        "client_secret": "${AZURE_CLIENT_SECRET}"
+      },
+      "gcp": {
+        "enabled": false,
+        "project_id": "${GCP_PROJECT_ID}",
+        "credentials_path": "${GCP_CREDENTIALS_PATH}"
+      }
+    },
+    "notification_channels": {
+      "slack": {
+        "enabled": false,
+        "webhook_url": "${SLACK_WEBHOOK_URL}",
+        "channel": "#security-alerts"
+      },
+      "discord": {
+        "enabled": false,
+        "webhook_url": "${DISCORD_WEBHOOK_URL}"
+      },
+      "teams": {
+        "enabled": false,
+        "webhook_url": "${TEAMS_WEBHOOK_URL}"
+      }
+    }
+  },
+  
+  "performance": {
+    "caching": {
+      "enabled": true,
+      "backend": "memory",
+      "redis_url": "redis://localhost:6379/0",
+      "default_ttl": 3600,
+      "scan_results_ttl": 1800,
+      "ml_predictions_ttl": 1800
+    },
+    "optimization": {
+      "async_processing": true,
+      "batch_operations": true,
+      "compression_enabled": true,
+      "parallel_scanning": true,
+      "max_workers": 4
+    }
+  },
+  
+  "blockchain": {
+    "enabled": false,
+    "network": "ethereum",
+    "provider_url": "https://mainnet.infura.io/v3/${INFURA_PROJECT_ID}",
+    "contract_address": "0x742d35cc6966c2c1180bb0d5c7c37b0d0b2c6a7c",
+    "gas_limit": 200000,
+    "audit_events": [
+      "policy_violation",
+      "data_access",
+      "configuration_change",
+      "compliance_check"
+    ]
+  },
+  
+  "ai_ml": {
+    "enabled": true,
+    "model_training": {
+      "auto_training": false,
+      "training_schedule": "weekly",
+      "min_training_samples": 1000,
+      "validation_split": 0.2
+    },
+    "risk_assessment": {
+      "model_name": "RiskNet-v3",
+      "accuracy_threshold": 0.95,
+      "real_time_scoring": true
+    },
+    "anomaly_detection": {
+      "enabled": true,
+      "sensitivity": 0.8,
+      "baseline_days": 30
+    }
+  },
+  
+  "backup": {
+    "enabled": true,
+    "schedule": "daily",
+    "backup_path": "./backups",
+    "retention_days": 30,
+    "encryption_enabled": true,
+    "compression_enabled": true,
+    "verify_integrity": true
+  },
+  
+  "development": {
+    "debug_mode": false,
+    "hot_reload": false,
+    "profiling_enabled": false,
+    "test_mode": false,
+    "mock_external_services": false
+  },
+  
+  "feature_flags": {
+    "advanced_ml": true,
+    "quantum_cryptography": true,
+    "blockchain_integration": false,
+    "federated_learning": true,
+    "biometric_auth": true,
+    "voice_recognition": true,
+    "behavioral_analytics": true,
+    "zero_trust": true,
+    "progressive_mfa": true,
+    "social_auth": false
+  }
+}

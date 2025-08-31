@@ -1,0 +1,61 @@
+[Unit]
+Description=CASB Security System
+Documentation=https://github.com/yourcompany/casb-security-system
+After=network.target network-online.target
+Wants=network-online.target
+Requires=network.target
+
+[Service]
+Type=notify
+User=casb
+Group=casb
+WorkingDirectory=/opt/casb
+ExecStart=/opt/casb/scripts/start.sh start
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStop=/opt/casb/scripts/start.sh stop
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStartSec=60
+TimeoutStopSec=30
+Restart=always
+RestartSec=5
+StartLimitInterval=300
+StartLimitBurst=3
+
+# Переменные окружения
+Environment=PYTHONPATH=/opt/casb
+Environment=FLASK_ENV=production
+Environment=CASB_CONFIG_PATH=/opt/casb/config.yaml
+Environment=CASB_DATA_DIR=/opt/casb/data
+Environment=CASB_LOGS_DIR=/opt/casb/logs
+
+# Настройки безопасности
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/casb/data /opt/casb/logs /tmp
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictNamespaces=true
+SystemCallFilter=@system-service
+SystemCallFilter=~@debug @mount @cpu-emulation @obsolete @privileged @reboot @swap @raw-io
+
+# Лимиты ресурсов
+LimitNOFILE=65536
+LimitNPROC=4096
+MemoryMax=2G
+CPUQuota=200%
+
+# Настройки логирования
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=casb-security
+
+[Install]
+WantedBy=multi-user.target

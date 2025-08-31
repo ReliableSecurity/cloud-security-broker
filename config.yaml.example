@@ -1,0 +1,80 @@
+# Пример конфигурации CASB Security System
+# Скопируйте этот файл в config.yaml и измените настройки
+
+# Основные настройки системы
+system:
+  name: "CASB Security System"
+  version: "1.0.0"
+  environment: "production"  # development, staging, production
+  debug: false
+  secret_key: "CHANGE-THIS-SECRET-KEY-IN-PRODUCTION"
+  timezone: "Europe/Moscow"
+
+# Настройки веб-сервера
+server:
+  host: "0.0.0.0"
+  port: 5000
+  ssl_enabled: true
+  ssl_cert_path: "/app/ssl/casb.crt"
+  ssl_key_path: "/app/ssl/casb.key"
+  session_timeout: 3600
+  max_login_attempts: 5
+  lockout_duration: 900
+
+# База данных
+database:
+  type: "sqlite"
+  path: "data/casb.db"
+
+# Настройки аутентификации
+authentication:
+  jwt_secret: "CHANGE-THIS-JWT-SECRET-IN-PRODUCTION"
+  jwt_expiration: 3600
+  password_policy:
+    min_length: 8
+    require_uppercase: true
+    require_lowercase: true
+    require_numbers: true
+    require_special_chars: true
+
+# Многофакторная аутентификация (MFA)
+mfa:
+  enabled: true
+  totp:
+    enabled: true
+    issuer: "CASB Security"
+  email:
+    enabled: true
+    smtp_server: "smtp.yandex.ru"
+    smtp_port: 587
+    username: "notifications@yourcompany.ru"
+    password: "YOUR-EMAIL-PASSWORD"
+    use_tls: true
+
+# Интеграция с облачными провайдерами
+cloud_providers:
+  yandex_cloud:
+    enabled: true
+    folder_id: "YOUR-YANDEX-FOLDER-ID"
+    service_account_key: "path/to/service-account-key.json"
+    monitored_services: ["storage", "compute", "iam"]
+  
+  aws:
+    enabled: false
+    region: "eu-west-1"
+    access_key_id: "YOUR-AWS-ACCESS-KEY"
+    secret_access_key: "YOUR-AWS-SECRET-KEY"
+    monitored_services: ["s3", "ec2", "iam", "cloudtrail"]
+
+# Предотвращение утечки данных (DLP)
+dlp:
+  enabled: true
+  scan_enabled: true
+  quarantine_path: "data/quarantine/"
+
+# Политики безопасности
+security_policies:
+  default_action: "allow"
+  geo_restrictions:
+    enabled: true
+    allowed_countries: ["RU", "BY", "KZ"]
