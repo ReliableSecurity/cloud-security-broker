@@ -661,10 +661,10 @@ dlp_report = dlp_engine.export_dlp_report(
 
 ### Контакты
 
-- **Email:** support@casb-security.ru
-- **Telegram:** @casb_support
-- **GitHub:** https://github.com/your-org/casb-security
-
+- **Email:** reliablesecurity@protonmail.com
+- **Telegram:** @reliablesecurity
+- **GitHub:** https://github.com/ReliableSecurity/cloud-security-broker
+  
 ### Участие в разработке
 
 1. Fork репозитория
