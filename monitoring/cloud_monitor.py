@@ -491,16 +491,11 @@ class CloudActivityMonitor:
         webhook_url = self.config.get('webhook_url')
         if webhook_url:
             try:
-<<<<<<< HEAD
                 import requests
                 response = requests.post(webhook_url, json=notification_data, timeout=10)
                 logger.info(f"Уведомление отправлено на webhook: {response.status_code}")
             except ImportError:
                 logger.warning("Модуль requests не найден, webhook не отправлен")
-=======
-                response = requests.post(webhook_url, json=notification_data, timeout=10)
-                logger.info(f"Уведомление отправлено на webhook: {response.status_code}")
->>>>>>> 6a957a79fcae81cce45d82785a90ea897abf26b0
             except Exception as e:
                 logger.error(f"Ошибка отправки webhook: {e}")
     

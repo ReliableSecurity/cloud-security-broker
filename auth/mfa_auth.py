@@ -372,13 +372,10 @@ class MFAAuthenticator:
             logger.info(f"Email код {code} для {email} (SMTP отключен)")
             return
         
-<<<<<<< HEAD
         if MimeText is None or MimeMultipart is None:
             logger.warning("Email модули недоступны, код не отправлен")
             return
         
-=======
->>>>>>> 6a957a79fcae81cce45d82785a90ea897abf26b0
         try:
             msg = MimeMultipart()
             msg['From'] = self.smtp_config['from_email']
