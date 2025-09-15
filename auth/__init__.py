@@ -5,4 +5,4 @@
 
 from .mfa_auth import MFAAuthenticator
 
-__all__ = ['MFAAuth']
+__all__ = ['MFAAuthenticator']

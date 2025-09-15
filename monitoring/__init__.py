@@ -5,4 +5,4 @@
 
 from .cloud_monitor import CloudActivityMonitor
 
-__all__ = ['CloudMonitoring']
+__all__ = ['CloudActivityMonitor']

@@ -186,7 +186,7 @@ class CASBApplication:
                     'active_policies': 0  # Will be implemented later
                 }
             except Exception as e:
-                logger.error(f"Ошибка получения статистики: {e}")
+                self.logger.error(f"Ошибка получения статистики: {e}")
                 stats = {
                     'total_requests': 0,
                     'blocked_requests': 0,
