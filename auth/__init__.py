@@ -3,6 +3,6 @@
 Многофакторная аутентификация и управление сессиями
 """
 
-from .mfa_auth import MFAAuth
+from .mfa_auth import MFAAuthenticator
 
 __all__ = ['MFAAuth']

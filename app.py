@@ -20,10 +20,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 # Импорт модулей CASB
 try:
     from core.casb import CASBCore
-    from auth.mfa_auth import MFAAuth
-    from monitoring.cloud_monitor import CloudMonitoring
-    from dlp.data_protection import DLPProtection
-    from policies.policy_engine import SecurityPolicyManager
+    from auth.mfa_auth import MFAAuthenticator
+    from monitoring.cloud_monitor import CloudActivityMonitor
+    from dlp.data_protection import DataProtectionEngine
+    from policies.policy_engine import PolicyEngine
     from api.cloud_integration import create_api_app
 except ImportError as e:
     print(f"Ошибка импорта модулей CASB: {e}")
@@ -84,11 +84,11 @@ class CASBApplication:
         os.makedirs(os.path.dirname(db_path), exist_ok=True)
         
         # Инициализация компонентов
-        self.casb_core = CASBCore(db_path)
-        self.mfa_auth = MFAAuth()
-        self.cloud_monitoring = CloudMonitoring()
-        self.dlp_protection = DLPProtection()
-        self.policy_manager = SecurityPolicyManager()
+        self.casb_core = CASBCore()
+        self.mfa_auth = MFAAuthenticator(db_path)
+        self.cloud_monitoring = CloudActivityMonitor(db_path)
+        self.dlp_protection = DataProtectionEngine(db_path)
+        self.policy_manager = PolicyEngine(db_path)
         
         # Регистрация API Blueprint
         api_app = create_api_app()
@@ -174,14 +174,27 @@ class CASBApplication:
                 return redirect(url_for('login'))
             
             # Получение статистики для дашборда
-            stats = {
-                'total_requests': len(self.casb_core.access_requests),
-                'blocked_requests': len([r for r in self.casb_core.access_requests if r['status'] == 'blocked']),
-                'threat_detections': len([e for e in self.cloud_monitoring.events if e['severity'] in ['high', 'critical']]),
-                'active_users': len([u for u in self.casb_core.users if u['is_active']]),
-                'dlp_events': len(self.dlp_protection.scan_results),
-                'active_policies': len([p for p in self.policy_manager.policies if p['is_active']])
-            }
+            try:
+                casb_metrics = self.casb_core.get_dashboard_metrics()
+                monitoring_metrics = self.cloud_monitoring.get_activity_dashboard(hours=24)
+                stats = {
+                    'total_requests': casb_metrics.get('metrics', {}).get('total_requests', 0),
+                    'blocked_requests': casb_metrics.get('metrics', {}).get('blocked_requests', 0),
+                    'threat_detections': monitoring_metrics.get('summary', {}).get('active_alerts', 0),
+                    'active_users': casb_metrics.get('summary', {}).get('active_users', 0),
+                    'dlp_events': 0,  # Will be implemented later
+                    'active_policies': 0  # Will be implemented later
+                }
+            except Exception as e:
+                logger.error(f"Ошибка получения статистики: {e}")
+                stats = {
+                    'total_requests': 0,
+                    'blocked_requests': 0,
+                    'threat_detections': 0,
+                    'active_users': 0,
+                    'dlp_events': 0,
+                    'active_policies': 0
+                }
             
             return render_template('dashboard.html', stats=stats, user=session)
         

@@ -3,6 +3,6 @@
 Отслеживание активности в облачных сервисах и обнаружение угроз
 """
 
-from .cloud_monitor import CloudMonitoring
+from .cloud_monitor import CloudActivityMonitor
 
 __all__ = ['CloudMonitoring']

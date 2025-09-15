@@ -150,4 +150,25 @@ setup(
         ("docs", ["README.md", "README_DETAILED.md"]),
     ],
     zip_safe=False,
-    keywords=[\n        "security", "dlp", "mfa", "casb", "cloud-security", \n        "data-loss-prevention", "multi-factor-authentication",\n        "access-control", "compliance", "audit", "encryption",\n        "biometric", "quantum-resistant", "blockchain", "zero-trust"\n    ],\n    platforms=["any"],\n    license="MIT",\n    \n    # Additional metadata for PyPI\n    maintainer="CASB Security Team",\n    maintainer_email="maintainers@casb-security.com",\n    \n    # Security and compliance information\n    download_url="https://github.com/yourusername/cloud-security-broker/archive/v2.0.0.tar.gz",\n    \n    # Documentation URLs\n    documentation_url="https://casb-security.readthedocs.io/",\n    \n    # Support information\n    support_url="https://github.com/yourusername/cloud-security-broker/issues",\n)", "search_start_line_number": 1}]
+    keywords=[
+        "security", "dlp", "mfa", "casb", "cloud-security", 
+        "data-loss-prevention", "multi-factor-authentication",
+        "access-control", "compliance", "audit", "encryption",
+        "biometric", "quantum-resistant", "blockchain", "zero-trust"
+    ],
+    platforms=["any"],
+    license="MIT",
+    
+    # Additional metadata for PyPI
+    maintainer="CASB Security Team",
+    maintainer_email="maintainers@casb-security.com",
+    
+    # Security and compliance information
+    download_url="https://github.com/ReliableSecurity/cloud-security-broker/archive/v2.0.0.tar.gz",
+    
+    # Documentation URLs
+    documentation_url="https://casb-security.readthedocs.io/",
+    
+    # Support information
+    support_url="https://github.com/ReliableSecurity/cloud-security-broker/issues",
+)

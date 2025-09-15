@@ -16,8 +16,13 @@ import time
 import logging
 from typing import Dict, Optional, Tuple, List, Any
 from datetime import datetime, timedelta
-from email.mime.text import MimeText
-from email.mime.multipart import MimeMultipart
+try:
+    from email.mime.text import MimeText
+    from email.mime.multipart import MimeMultipart
+except ImportError:
+    # Fallback for older Python versions or restricted environments
+    MimeText = None
+    MimeMultipart = None
 from dataclasses import dataclass
 import sqlite3
 import hashlib
@@ -365,6 +370,10 @@ class MFAAuthenticator:
         """Отправка Email кода"""
         if not self.smtp_config.get('enabled', False):
             logger.info(f"Email код {code} для {email} (SMTP отключен)")
+            return
+        
+        if MimeText is None or MimeMultipart is None:
+            logger.warning("Email модули недоступны, код не отправлен")
             return
         
         try:
